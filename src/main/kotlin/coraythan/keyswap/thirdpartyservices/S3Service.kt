@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
+//js@U2L4]
 
 @Service
 class S3Service(
@@ -24,13 +25,13 @@ class S3Service(
         private const val userContentBucket = "dok-user-content"
 
         fun userContentUrl(key: String) = "${urlStart(userContentBucket)}$key"
-        private fun urlStart(bucket: String) = "https://$bucket.s3-us-west-2.amazonaws.com/"
+        private fun urlStart(bucket: String) = "s3://arn:aws:s3:us-east-1:143690004060:accesspoint/keyswap-ap"
     }
 
     private val s3client = AmazonS3ClientBuilder
             .standard()
             .withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials(
-                    "AKIAJDCMSGEGUEAQIVLQ",
+                    "AKIASC5EXOZOKHDPELXO",
                     awsSecretkey
             )))
             .withRegion(Regions.US_WEST_2)

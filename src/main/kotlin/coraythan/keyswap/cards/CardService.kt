@@ -87,7 +87,7 @@ class CardService(
             }
         } catch (exception: Exception) {
             log.error("Nothing is going to work because we couldn't publish extra info!", exception)
-            throw IllegalStateException(exception)
+            // throw IllegalStateException(exception)
         }
     }
 
