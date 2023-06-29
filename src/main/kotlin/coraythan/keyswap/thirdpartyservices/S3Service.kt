@@ -3,10 +3,12 @@ package coraythan.keyswap.thirdpartyservices
 import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.regions.Regions
+import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PutObjectRequest
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -14,12 +16,13 @@ import java.util.*
 
 @Service
 class S3Service(
-        @Value("\${aws-secret-key}")
-        private val awsSecretkey: String,
+        @Value("\${aws-s3-url}")
+        val s3Url: String
 ) {
 
     private val log = LoggerFactory.getLogger(this::class.java)
 
+    // TODO make this more dynamic? Or get from S3 object?
     companion object {
         private const val userContentBucket = "dok-user-content"
 
@@ -27,14 +30,8 @@ class S3Service(
         private fun urlStart(bucket: String) = "https://$bucket.s3-us-west-2.amazonaws.com/"
     }
 
-    private val s3client = AmazonS3ClientBuilder
-            .standard()
-            .withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials(
-                    "AKIAJDCMSGEGUEAQIVLQ",
-                    awsSecretkey
-            )))
-            .withRegion(Regions.US_WEST_2)
-            .build()
+    @Autowired
+    private lateinit var s3client: AmazonS3
 
     fun addDeckImage(deckImage: MultipartFile, deckId: Long, userId: UUID, extension: String): String {
         return addImage(deckImage, "deck-ownership", "$deckId-$userId", extension)
