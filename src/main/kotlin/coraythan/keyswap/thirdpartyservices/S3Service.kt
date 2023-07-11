@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
-//js@U2L4]
 
 @Service
 class S3Service(
@@ -34,7 +33,7 @@ class S3Service(
                     "AKIASC5EXOZOKHDPELXO",
                     awsSecretkey
             )))
-            .withRegion(Regions.US_WEST_2)
+            .withRegion(Regions.US_EAST_1)
             .build()
 
     fun addDeckImage(deckImage: MultipartFile, deckId: Long, userId: UUID, extension: String): String {
