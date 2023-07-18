@@ -51,3 +51,9 @@ spring:
             required: true
 
 env: ${ENV:dev}
+aws-public-key: xxx
+aws-secret-key: xxx
+# these can all be fake values
+patreon-secret-key: fakekey
+patreon-client-id: fakekey
+secret-api-key: fakekey

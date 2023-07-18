@@ -3,7 +3,7 @@ package coraythan.keyswap.decks.ownership
 import coraythan.keyswap.auctions.DeckListingRepo
 import coraythan.keyswap.config.UnauthorizedException
 import coraythan.keyswap.decks.DeckRepo
-import coraythan.keyswap.thirdpartyservices.S3Service
+import coraythan.keyswap.thirdpartyservices.FileService
 import coraythan.keyswap.userdeck.OwnedDeckRepo
 import coraythan.keyswap.users.CurrentUserService
 import org.springframework.data.repository.findByIdOrNull
@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile
 @Transactional
 @Service
 class DeckOwnershipService(
-        private val s3Service: S3Service,
+        private val fileService: FileService,
         private val currentUserService: CurrentUserService,
         private val ownedDeckRepo: OwnedDeckRepo,
         private val deckOwnershipRepo: DeckOwnershipRepo,
@@ -32,7 +32,7 @@ class DeckOwnershipService(
 
         deleteDeckOwnership(deckId)
 
-        val key = s3Service.addDeckImage(deckImage, deckId, currentUser.id, extension)
+        val key = fileService.addDeckImage(deckImage, deckId, currentUser.id, extension)
 
         val deckOwnership = DeckOwnership(deckId, currentUser, key)
         deckOwnershipRepo.save(deckOwnership)
@@ -47,7 +47,7 @@ class DeckOwnershipService(
     fun deleteDeckOwnershipAndS3Object(deckId: Long) {
         val currentUser = currentUserService.loggedInUserOrUnauthorized()
         val ownership = deckOwnershipRepo.findByDeckIdAndUserId(deckId, currentUser.id) ?: return
-        s3Service.deleteUserContent(ownership.key)
+        fileService.deleteUserContent(ownership.key)
         deckOwnershipRepo.deleteAllByDeckIdAndUserId(deckId, currentUser.id)
 
         if (!deckOwnershipRepo.existsByDeckId(deckId)) {
@@ -73,7 +73,7 @@ class DeckOwnershipService(
 
         val firstImage = images.firstOrNull()
         val usersDeckImagesNotFirst = images.drop(1).filter { it.user.id == currentUser?.id }
-        return listOf(firstImage).plus(usersDeckImagesNotFirst).mapNotNull { it?.toDto() }
+        return listOf(firstImage).plus(usersDeckImagesNotFirst).mapNotNull { it?.toDto(fileService) }
     }
 
     fun findDeckIdsForUser(): List<Long> {
