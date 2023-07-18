@@ -1,6 +1,6 @@
 package coraythan.keyswap.decks.ownership
 
-import coraythan.keyswap.thirdpartyservices.S3Service
+import coraythan.keyswap.thirdpartyservices.FileService
 import coraythan.keyswap.users.KeyUser
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -24,10 +24,10 @@ data class DeckOwnership(
     val uploadDate: LocalDate
         get() = uploadDateTime.toLocalDate()
 
-    fun toDto() = DeckOwnershipDto(
+    fun toDto(fileService: FileService) = DeckOwnershipDto(
             deckId = deckId,
             username = user.username,
-            url = S3Service.userContentUrl(key),
+            url = fileService.getUrl(key),
             uploadDate = uploadDate,
             id = id
     )
